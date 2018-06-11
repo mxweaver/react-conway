@@ -16,7 +16,8 @@ export default {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Game of Life',
-      template: path.join(__dirname, 'app', 'index.html')
+      template: path.join(__dirname, 'app', 'index.html'),
+      filename: path.join(__dirname, 'index.html')
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[contentHash].css'
