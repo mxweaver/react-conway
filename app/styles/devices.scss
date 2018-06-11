@@ -1,0 +1,20 @@
+$min-tablet-width: 768px;
+$min-tablet-landscape-width: 1100px;
+
+@mixin phone {
+    @media not screen and (min-width: $min-tablet-width) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: $min-tablet-width) {
+        @content;
+    }
+}
+
+@mixin tablet-landscape {
+    @media (min-width: $min-tablet-landscape-width) {
+        @content;
+    }
+}
