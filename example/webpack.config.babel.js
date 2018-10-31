@@ -1,5 +1,7 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import path from 'path'
 
 const environment = process.env.NODE_ENV || 'development'
@@ -10,19 +12,30 @@ export default {
   entry: path.join(__dirname, 'app', 'main.js'),
   devtool: environment === 'production' ? false : 'cheap-module-eval-source-map',
   output: {
-    path: path.join(__dirname, 'public'),
+    path: path.join(__dirname, 'dist'),
     filename: '[name].[chunkhash].js'
   },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Game of Life',
-      template: path.join(__dirname, 'app', 'index.html'),
-      filename: path.join(__dirname, 'index.html')
+      template: path.join(__dirname, 'app', 'index.html')
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[contentHash].css'
     })
   ],
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true
+      }),
+      new OptimizeCssAssetsPlugin({})
+    ],
+		splitChunks: {
+			chunks: 'all',
+		}
+  },
   module: {
     rules: [
       {
@@ -30,7 +43,12 @@ export default {
         use: {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true
+            cacheDirectory: true,
+            presets: ['@babel/preset-react'],
+            plugins: [
+              '@babel/plugin-proposal-object-rest-spread',
+              '@babel/plugin-proposal-class-properties'
+            ]
           }
         }
       },
@@ -45,8 +63,15 @@ export default {
               localIdentName: obfuscate ? '[hash:base64]' : '[path][name]-[local]-[hash:base64:5]'
             }
           },
-          'postcss-loader',
-          'sass-loader'
+          {
+            loader: 'postcss-loader',
+            options: {
+              config: {
+                path: 'postcss.config.js'
+              }
+            }
+          },
+          'sass-loader',
         ]
       },
       {
@@ -57,10 +82,6 @@ export default {
             minimize: true
           }
         }
-      },
-      {
-        test: /\.wasm$/,
-        loaders: ['wasm-loader']
       }
     ]
   }

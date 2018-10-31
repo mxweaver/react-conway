@@ -1,5 +1,4 @@
 @import '~normalize.css';
-@import './styles/devices.scss';
 
 :global {
     body {
@@ -7,8 +6,9 @@
         width: 100vw;
         margin: 0;
     }
-    
-    #canvas {
-        cursor: none;
-    }
+}
+
+.life {
+    width: 100vw;
+    height: 100vh;
 }
