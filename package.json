@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "Example of Conway's game of life",
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "Maya Vera",
+    "email": "maya@mayavera.me",
+    "url": "https://mayavera.me"
+  },
   "license": "ISC",
   "scripts": {
     "example:clean": "rm -rf example/dist",
