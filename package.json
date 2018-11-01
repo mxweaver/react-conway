@@ -1,8 +1,8 @@
 {
   "name": "react-life",
   "version": "0.1.0",
-  "description": "Example of Conway's game of life",
-  "keywords": [],
+  "description": "Conway's Game of Life in react",
+  "keywords": ["conway", "game", "life", "react"],
   "author": {
     "name": "Maya Vera",
     "email": "maya@mayavera.me",
