@@ -2,6 +2,9 @@
   "name": "react-life",
   "version": "0.1.0",
   "description": "Example of Conway's game of life",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "scripts": {
     "example:clean": "rm -rf example/dist",
     "example:build": "cd example && webpack-cli --progress",
@@ -9,9 +12,7 @@
     "example:rebuild": "npm run example:clean && npm run example:build",
     "lint": "eslint ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "main": "lib/life.js",
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
