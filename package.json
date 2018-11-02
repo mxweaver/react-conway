@@ -1,8 +1,13 @@
 {
-  "name": "react-life",
+  "name": "react-conway",
   "version": "0.1.0",
   "description": "Conway's Game of Life in react",
-  "keywords": ["conway", "game", "life", "react"],
+  "keywords": [
+    "conway",
+    "game",
+    "life",
+    "react"
+  ],
   "author": {
     "name": "Maya Vera",
     "email": "maya@mayavera.me",
@@ -53,6 +58,7 @@
   },
   "peerDependencies": {
     "classnames": "^2.2.6",
+    "debounce": "^1.2.0",
     "prop-types": "^15.6.2",
     "react": "^16.6.0"
   }
