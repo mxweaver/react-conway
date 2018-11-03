@@ -20,7 +20,7 @@
     "example:dev": "cd example && webpack-dev-server",
     "example:rebuild": "npm run example:clean && npm run example:build",
     "lint": "eslint .",
-    "test": "mocha",
+    "test": "nyc mocha",
     "test:in-container": "docker run $(docker build -q . -f test/Dockerfile)",
     "test:build-container": "docker build -f test/Dockerfile ."
   },
@@ -57,6 +57,7 @@
     "mocha": "^5.2.0",
     "node-sass": "^4.9.4",
     "normalize.css": "^8.0.0",
+    "nyc": "^13.1.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^2.1.5",
     "prop-types": "^15.6.2",
