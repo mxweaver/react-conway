@@ -21,6 +21,7 @@
     "example:rebuild": "npm run example:clean && npm run example:build",
     "lint": "eslint .",
     "test": "nyc mocha",
+		"test:with-coverage": "nyc --reporter=lcov mocha",
     "test:in-container": "docker run $(docker build -q . -f test/Dockerfile)",
     "test:build-container": "docker build -f test/Dockerfile ."
   },
