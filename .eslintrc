@@ -1,4 +1,5 @@
 {
+  "root": true,
   "plugins": [
     "react",
     "node"
@@ -12,6 +13,11 @@
   ],
   "env": {
     "browser": true
+  },
+  "settings": {
+    "react": {
+      "version": "16.6"
+    }
   },
   "rules": {
     "node/no-unpublished-require": "off",
