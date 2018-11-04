@@ -28,7 +28,8 @@
     "test:with-coverage": "nyc --reporter=lcov mocha test/*.test.js",
     "test:in-container": "docker run $(docker build -q . -f test/Dockerfile)",
     "test:build-container": "docker build -f test/Dockerfile .",
-    "bench": "babel-node test/bench.js"
+    "bench": "babel-node test/bench.js",
+    "bench:watch": "nodemon --exec npm run bench"
   },
   "main": "lib/life.js",
   "devDependencies": {
@@ -63,6 +64,7 @@
     "mini-css-extract-plugin": "^0.4.0",
     "mocha": "^5.2.0",
     "node-sass": "^4.9.4",
+    "nodemon": "^1.18.5",
     "normalize-scss": "^7.0.1",
     "nyc": "^13.1.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
