@@ -19,3 +19,4 @@ function run (name, task) {
 
 run('tick', () => life.tick())
 run('draw', () => life.draw())
+run('seed', () => life.seed())
