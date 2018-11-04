@@ -1,6 +1,13 @@
 .babelrc
+.dockerignore
 .eslintignore
 .eslintrc
+.github
 .nojekyll
-index.html
+.nyc_output
+coverage
 example
+index.html
+test
+CODE_OF_CONDUCT.md
+PULL_REQUEST_TEMPLATE.md
