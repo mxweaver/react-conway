@@ -19,7 +19,7 @@ render(
 
 Check out [`/example`](example) to see it in action!
 
-## API
+## Properties
 
 ### `className: string`
 
