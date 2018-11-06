@@ -27,7 +27,7 @@ When set, it will be appended to the list of class names on the display element.
 
 ### `seed: string`
 
-When set, it this value will determine the initial state of the simulation (also known as a _seed_). Otherwise, the initial state will be random.
+When set, this value will determine the initial state of the simulation. Otherwise, the initial state will be random.
 
 ### `scale: number = 4`
 
