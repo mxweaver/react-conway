@@ -12,7 +12,13 @@ import { render } from 'react-dom'
 import Life from '../../lib/life'
 
 render(
-    <Life/>,
+    <Life
+        className="life" { // will get passed on to the rendered canvas }
+        seed="asura"     { // determines the initial state }
+        scale="2"        { // determines the width and height of each cell }
+        running={true}   { // pretty self-explanatory... }
+        framerate={60}   { // sets the game loop frequency (60 iterations each second)}
+    />,
     document.getElementById('react-root')
 )
 ```
