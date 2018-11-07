@@ -1,13 +1,26 @@
 {
+  "parser": "babel-eslint",
   "plugins": [
     "mocha",
-    "react"
+    "react",
+    "babel",
+    "node"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended"
   ],
   "env": {
     "mocha": true,
     "browser": true
   },
   "rules": {
-    "no-console": "off"
+    "no-console": "off",
+    "node/no-unsupported-features/es-syntax": ["error", {
+      "ignores": [ "modules" ]
+    }]
+  },
+  "globals": {
+    "BigInt": false
   }
 }

@@ -32,11 +32,15 @@
     "bench:watch": "nodemon --exec npm run bench"
   },
   "main": "lib/life.js",
+  "engines": {
+    "node": ">=10.7.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/node": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-syntax-bigint": "^7.0.0",
     "@babel/plugin-syntax-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
@@ -50,9 +54,11 @@
     "chai": "^4.2.0",
     "css-loader": "^0.28.11",
     "css-modules-require-hook": "^4.2.3",
+    "dateformat": "^3.0.3",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.6.0",
     "eslint": "^5.8.0",
+    "eslint-plugin-babel": "^5.2.1",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-node": "^8.0.0",
