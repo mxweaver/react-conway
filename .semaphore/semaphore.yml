@@ -8,7 +8,11 @@ agent:
 blocks:
   - name: Build Example
     task:
-      prologue: prologue.sh
+      prologue: &common-prologue
+        commands:
+          - checkout
+          - npm install --global npm
+          - npm install
       jobs:
       - name: Build Example
         commands:
@@ -16,7 +20,7 @@ blocks:
 
   - name: Unit Tests
     task:
-      prologue: prologue.sh
+      prologue: *common-proglogue
       jobs:
       - name: Run Unit Tests
         commands:
@@ -24,7 +28,7 @@ blocks:
 
   - name: Lint
     task:
-      prologue: prologue.sh
+      prologue: *common-prologue
       jobs:
       - name: Lint
         commands:
