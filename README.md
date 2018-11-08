@@ -2,8 +2,6 @@
 
 [![npm](https://img.shields.io/npm/v/react-conway.svg)](https://www.npmjs.com/package/react-conway) [![Maintainability](https://api.codeclimate.com/v1/badges/36ef2a746b94a3af995a/maintainability)](https://codeclimate.com/github/mayavera/react-conway/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/36ef2a746b94a3af995a/test_coverage)](https://codeclimate.com/github/mayavera/react-conway/test_coverage)
 
-## [Demo](http://mayavera.github.io/react-conway)
-
 ## Usage
 
 ```js
@@ -23,7 +21,7 @@ render(
 )
 ```
 
-Check out [`/example`](example) to see it in action!
+Check out [`/example`](example) to [see it in action](http://mayavera.github.io/react-conway)!
 
 ## Properties
 
