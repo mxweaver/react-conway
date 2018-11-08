@@ -1,0 +1,35 @@
+version: v1.0
+name: Main Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: Build Example
+    task:
+      prologue: &common-prologue
+        commands:
+          - checkout
+          - npm install --global npm
+          - npm install
+      jobs:
+      - name: Build Example
+        commands:
+          - npm run example:build
+
+  - name: Unit Tests
+    task:
+      prologue: *common-prologue
+      jobs:
+      - name: Run Unit Tests
+        commands:
+          - npm run test
+
+  - name: Lint
+    task:
+      prologue: *common-prologue
+      jobs:
+      - name: Lint
+        commands:
+          - npm run lint
