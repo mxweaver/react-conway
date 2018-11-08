@@ -12,6 +12,7 @@ blocks:
       - name: Build Example
         commands:
           - checkout
+          - npm install
           - npm run example:build
 
   - name: "Unit Tests"
@@ -20,6 +21,7 @@ blocks:
       - name: Run Unit Tests
         commands:
           - checkout
+          - npm install
           - npm run test
 
   - name: "Lint"
@@ -28,4 +30,5 @@ blocks:
       - name: Lint All .js
         commands:
           - checkout
+          - npm install
           - npm run lint
