@@ -6,32 +6,35 @@ agent:
     os_image: ubuntu1804
 
 blocks:
-  - name: "Build Example"
+  - name: Build Example
     task:
+      prologue:
+        - checkout
+        - npm install --global npm
+        - npm install
       jobs:
       - name: Build Example
         commands:
-          - checkout
-          - npm i -g npm
-          - npm install
           - npm run example:build
 
-  - name: "Unit Tests"
+  - name: Unit Tests
     task:
+      prologue:
+        - checkout
+        - npm install --global npm
+        - npm install
       jobs:
       - name: Run Unit Tests
         commands:
-          - checkout
-          - npm i -g npm
-          - npm install
           - npm run test
 
-  - name: "Lint"
+  - name: Lint
     task:
+      prologue:
+        - checkout
+        - npm install --global npm
+        - npm install
       jobs:
-      - name: Lint All .js
+      - name: Lint
         commands:
-          - checkout
-          - npm i -g npm
-          - npm install
           - npm run lint
