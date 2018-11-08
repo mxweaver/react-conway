@@ -17,7 +17,7 @@ render(
         seed="asura"     { // determines the initial state }
         scale="2"        { // determines the width and height of each cell }
         running={true}   { // pretty self-explanatory... }
-        framerate={60}   { // sets the game loop frequency (60 iterations each second)}
+        framerate={60}   { // sets the game loop frequency (60 iterations each second) }
     />,
     document.getElementById('react-root')
 )
