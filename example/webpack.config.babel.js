@@ -1,7 +1,7 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
 import path from 'path'
 
 const environment = process.env.NODE_ENV || 'development'
@@ -32,9 +32,9 @@ export default {
       }),
       new OptimizeCssAssetsPlugin({})
     ],
-		splitChunks: {
-			chunks: 'all',
-		}
+    splitChunks: {
+      chunks: 'all'
+    }
   },
   module: {
     rules: [
@@ -71,7 +71,7 @@ export default {
               }
             }
           },
-          'sass-loader',
+          'sass-loader'
         ]
       },
       {
