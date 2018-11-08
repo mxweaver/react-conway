@@ -1,24 +1,8 @@
 {
   "root": true,
-  "plugins": [
-    "react",
-    "node"
-  ],
   "parser": "babel-eslint",
   "extends": [
     "standard",
-    "plugin:react/recommended"
-  ],
-  "env": {
-    "browser": true
-  },
-  "settings": {
-    "react": {
-      "version": "16.6"
-    }
-  },
-  "rules": {
-    "node/no-unpublished-require": "off",
-    "node/no-unsupported-features/es-syntax": "off"
-  }
+    "standard-react"
+  ]
 }
