@@ -1,0 +1,31 @@
+version: v1.0
+name: Main Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: "Build Example"
+    task:
+      jobs:
+      - name: Build Example
+        commands:
+          - checkout
+          - npm run example:build
+
+  - name: "Unit Tests"
+    task:
+      jobs:
+      - name: Run Unit Tests
+        commands:
+          - checkout
+          - npm run test
+
+  - name: "Lint"
+    task:
+      jobs:
+      - name: Lint All .js
+        commands:
+          - checkout
+          - npm run lint
