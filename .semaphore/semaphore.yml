@@ -20,7 +20,7 @@ blocks:
 
   - name: Unit Tests
     task:
-      prologue: *common-proglogue
+      prologue: *common-prologue
       jobs:
       - name: Run Unit Tests
         commands:
