@@ -12,6 +12,6 @@ should()
 
 describe('Life', () => {
   it('should not explode', () => {
-    mount(<Life running={false}/>)
+    mount(<Life running={false} />)
   })
 })

@@ -8,7 +8,7 @@ configure({
   adapter: new Adapter()
 })
 
-const life = mount(<Life running={false}/>).instance()
+const life = mount(<Life running={false} />).instance()
 
 function run (name, task) {
   const start = process.hrtime()

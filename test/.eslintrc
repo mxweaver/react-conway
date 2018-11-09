@@ -1,13 +1,5 @@
 {
-  "plugins": [
-    "mocha",
-    "react"
-  ],
   "env": {
-    "mocha": true,
-    "browser": true
-  },
-  "rules": {
-    "no-console": "off"
+    "mocha": true
   }
 }
