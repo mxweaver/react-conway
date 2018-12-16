@@ -11,11 +11,11 @@ import Life from '../../lib/life'
 
 render(
     <Life
-        className="life" { /* will get passed on to the rendered canvas */ }
-        seed="asura"     { /* determines the initial state */ }
+        seed="asura"     { /* determines the initial board state */ }
         scale="2"        { /* determines the width and height of each cell */ }
         running={true}   { /* pretty self-explanatory... */ }
-        framerate={60}   { /* sets the game loop frequency (60 iterations each second) */ }
+        framerate={60}   { /* sets the game loop frequency (60 iterations per second) */ }
+        {/* all other props will be passed to the canvas element */}
     />,
     document.getElementById('react-root')
 )
@@ -24,10 +24,6 @@ render(
 Check out [`/example`](example) to [see it in action](http://mayavera.github.io/react-conway)!
 
 ## Properties
-
-### `className: string`
-
-When set, it will be appended to the list of class names on the display element.
 
 ### `seed: string`
 
