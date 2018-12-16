@@ -7,7 +7,7 @@
 ```js
 import React from 'react'
 import { render } from 'react-dom'
-import Life from '../../lib/life'
+import Life from 'react-conway'
 
 render(
     <Life
