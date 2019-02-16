@@ -20,7 +20,7 @@ export default class Life extends Component<Props, {}> {
   }
 
   display = React.createRef<HTMLCanvasElement>()
-  inputBuffer: number[] = []
+  inputBuffer: number[][] = []
   animationInterval: number
   previousAnimationTimestamp = 0
   animationPhase = 0
@@ -166,44 +166,49 @@ export default class Life extends Component<Props, {}> {
     this.seed()
     this.tick()
 
-    canvas.addEventListener('mouseover', e => {
-      this.showCursor = true
-      this.cursorRow = Math.floor(e.offsetY / this.props.scale)
-      this.cursorCol = Math.floor(e.offsetX / this.props.scale)
-    })
-
-    canvas.addEventListener('mousedown', () => {
-      this.drawing = true
-      this.inputBuffer.push([this.cursorRow, this.cursorCol])
-    })
-
-    canvas.addEventListener('mousemove', e => {
-      this.cursorRow = Math.floor(e.offsetY / this.props.scale)
-      this.cursorCol = Math.floor(e.offsetX / this.props.scale)
-
-      if (this.drawing) {
-        this.inputBuffer.push([this.cursorRow, this.cursorCol])
-      }
-    })
-
-    canvas.addEventListener('mouseup', () => {
-      this.drawing = false
-      this.flushInputBuffer()
-    })
-
-    canvas.addEventListener('mouseleave', () => {
-      this.drawing = false
-      this.showCursor = false
-      this.flushInputBuffer()
-    })
-
     window.requestAnimationFrame(this.start)
+  }
+
+  handleMouseOver = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    this.showCursor = true
+    this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
+    this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
+  }
+
+  handleMouseDown = () => {
+    this.drawing = true
+    this.inputBuffer.push([this.cursorRow, this.cursorCol])
+  }
+
+  handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
+    this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
+
+    if (this.drawing) {
+      this.inputBuffer.push([this.cursorRow, this.cursorCol])
+    }
+  }
+
+  handleMouseUp = () => {
+    this.drawing = false
+    this.flushInputBuffer()
+  }
+
+  handleMouseLeave = () => {
+    this.drawing = false
+    this.showCursor = false
+    this.flushInputBuffer()
   }
 
   render() {
     return <canvas
       ref={this.display}
       className={classnames(this.props.className, c.display)}
+      onMouseOver={this.handleMouseOver}
+      onMouseDown={this.handleMouseDown}
+      onMouseMove={this.handleMouseMove}
+      onMouseUp={this.handleMouseUp}
+      onMouseLeave={this.handleMouseLeave}
     />
   }
 }
