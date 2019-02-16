@@ -15,7 +15,8 @@ interface Props {
 interface State {
   animationPhase: number
   iteration: number,
-  previousAnimationTimestamp: number
+  previousAnimationTimestamp: number,
+  showCursor: boolean
 }
 
 export default class Life extends Component<Props, State> {
@@ -31,7 +32,6 @@ export default class Life extends Component<Props, State> {
   environment: number[][]
   numRows: number
   numCols: number
-  showCursor = false
   cursorCol?: number
   cursorRow?: number
   drawing = false
@@ -39,7 +39,8 @@ export default class Life extends Component<Props, State> {
   state: State = {
     animationPhase: 0,
     iteration: 0,
-    previousAnimationTimestamp: 0
+    previousAnimationTimestamp: 0,
+    showCursor: false
   }
 
   constructor(props: Props) {
@@ -125,7 +126,7 @@ export default class Life extends Component<Props, State> {
     }
 
     // Draw cursor
-    if (this.showCursor) {
+    if (this.state.showCursor) {
       context.fillStyle = 'red'
       context.fillRect(this.cursorCol * scale, this.cursorRow * scale, scale, scale)
     }
@@ -173,7 +174,6 @@ export default class Life extends Component<Props, State> {
     this.cursorRow = 0
     this.cursorCol = 0
 
-    this.showCursor = false
     this.drawing = false
 
     this.seed()
@@ -183,9 +183,11 @@ export default class Life extends Component<Props, State> {
   }
 
   handleMouseOver = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    this.showCursor = true
     this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
     this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
+    this.setState({
+      showCursor: true
+    })
   }
 
   handleMouseDown = () => {
@@ -209,8 +211,10 @@ export default class Life extends Component<Props, State> {
 
   handleMouseLeave = () => {
     this.drawing = false
-    this.showCursor = false
     this.flushInputBuffer()
+    this.setState({
+      showCursor: false
+    })
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
