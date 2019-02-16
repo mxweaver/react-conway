@@ -18,7 +18,9 @@ interface State {
   animationPhase: number
   iteration: number,
   previousAnimationTimestamp: number,
-  showCursor: boolean
+  showCursor: boolean,
+  cursorCol?: number
+  cursorRow?: number
 }
 
 export default class Life extends Component<Props, State> {
@@ -34,8 +36,6 @@ export default class Life extends Component<Props, State> {
   environment: number[][]
   numRows: number
   numCols: number
-  cursorCol?: number
-  cursorRow?: number
 
   state: State = {
     animationPhase: 0,
@@ -129,7 +129,7 @@ export default class Life extends Component<Props, State> {
     // Draw cursor
     if (this.state.showCursor) {
       context.fillStyle = 'red'
-      context.fillRect(this.cursorCol * scale, this.cursorRow * scale, scale, scale)
+      context.fillRect(this.state.cursorCol * scale, this.state.cursorRow * scale, scale, scale)
     }
   }
 
@@ -172,9 +172,6 @@ export default class Life extends Component<Props, State> {
 
     this.environment = ([...new Array(this.numRows)]).map(() => [...new Array(this.numCols)])
 
-    this.cursorRow = 0
-    this.cursorCol = 0
-
     this.seed()
     this.tick(0)
 
@@ -182,24 +179,26 @@ export default class Life extends Component<Props, State> {
   }
 
   handleMouseOver = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
-    this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
     this.setState({
-      showCursor: true
+      showCursor: true,
+      cursorRow: Math.floor(e.nativeEvent.offsetY / this.props.scale),
+      cursorCol: Math.floor(e.nativeEvent.offsetX / this.props.scale)
     })
   }
 
   handleMouseDown = () => {
-    this.inputBuffer.push([this.cursorRow, this.cursorCol])
+    this.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
   }
 
   handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
-    this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
-
     if (e.buttons & LEFT_MOUSE_BUTTON) {
-      this.inputBuffer.push([this.cursorRow, this.cursorCol])
+      this.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
     }
+
+    this.setState({
+      cursorRow: Math.floor(e.nativeEvent.offsetY / this.props.scale),
+      cursorCol: Math.floor(e.nativeEvent.offsetX / this.props.scale)
+    })
   }
 
   handleMouseUp = () => {
