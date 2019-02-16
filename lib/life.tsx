@@ -12,7 +12,13 @@ interface Props {
   className?: string
 }
 
-export default class Life extends Component<Props, {}> {
+interface State {
+  animationPhase: number
+  iteration: number,
+  previousAnimationTimestamp: number
+}
+
+export default class Life extends Component<Props, State> {
   static defaultProps: Partial<Props> = {
     scale: 4,
     running: true,
@@ -22,8 +28,6 @@ export default class Life extends Component<Props, {}> {
   display = React.createRef<HTMLCanvasElement>()
   inputBuffer: number[][] = []
   animationInterval: number
-  previousAnimationTimestamp = 0
-  animationPhase = 0
   environment: number[][]
   numRows: number
   numCols: number
@@ -31,6 +35,12 @@ export default class Life extends Component<Props, {}> {
   cursorCol?: number
   cursorRow?: number
   drawing = false
+
+  state: State = {
+    animationPhase: 0,
+    iteration: 0,
+    previousAnimationTimestamp: 0
+  }
 
   constructor(props: Props) {
     super(props)
@@ -41,11 +51,12 @@ export default class Life extends Component<Props, {}> {
     this.animationInterval = 1000 / this.props.framerate
   }
 
-  tick() {
+  tick(timestamp: number) {
     const { environment, numRows, numCols } = this
+    const { animationPhase } = this.state
 
-    const mask = this.animationPhase === 0 ? 1 : 2
-    const writeMask = this.animationPhase === 0 ? 2 : 1
+    const mask = animationPhase === 0 ? 1 : 2
+    const writeMask = animationPhase === 0 ? 2 : 1
 
     for (let i = 0; i < numRows; i++) {
       for (let j = 0; j < numCols; j++) {
@@ -55,18 +66,18 @@ export default class Life extends Component<Props, {}> {
         const eastCol = (numCols + j + 1) % numCols
 
         const neighbors = 0 +
-          +((environment[northRow][westCol] & mask) >> this.animationPhase) +
-          ((environment[northRow][j] & mask) >> this.animationPhase) +
-          ((environment[northRow][eastCol] & mask) >> this.animationPhase) +
-          ((environment[i][westCol] & mask) >> this.animationPhase) +
-          ((environment[i][eastCol] & mask) >> this.animationPhase) +
-          ((environment[southRow][westCol] & mask) >> this.animationPhase) +
-          ((environment[southRow][j] & mask) >> this.animationPhase) +
-          ((environment[southRow][eastCol] & mask) >> this.animationPhase)
+          +((environment[northRow][westCol] & mask) >> animationPhase) +
+          ((environment[northRow][j] & mask) >> animationPhase) +
+          ((environment[northRow][eastCol] & mask) >> animationPhase) +
+          ((environment[i][westCol] & mask) >> animationPhase) +
+          ((environment[i][eastCol] & mask) >> animationPhase) +
+          ((environment[southRow][westCol] & mask) >> animationPhase) +
+          ((environment[southRow][j] & mask) >> animationPhase) +
+          ((environment[southRow][eastCol] & mask) >> animationPhase)
 
         const cell = environment[i][j]
 
-        if ((cell & mask) >> this.animationPhase === 1) {
+        if ((cell & mask) >> animationPhase === 1) {
           if (neighbors === 3 || neighbors === 2) {
             environment[i][j] = writeMask | cell
           } else {
@@ -80,19 +91,24 @@ export default class Life extends Component<Props, {}> {
       }
     }
 
-    this.animationPhase = this.animationPhase === 0 ? 1 : 0
+    this.setState({
+      animationPhase: animationPhase === 0 ? 1 : 0,
+      iteration: this.state.iteration + 1,
+      previousAnimationTimestamp: timestamp
+    })
   }
 
   draw() {
     const context = this.display.current.getContext('2d')
     const { scale } = this.props
+    const { animationPhase } = this.state
 
-    const mask = this.animationPhase === 0 ? 1 : 2
+    const mask = animationPhase === 0 ? 1 : 2
 
     // Draw environment
     for (let i = 0; i < this.numRows; i++) {
       for (let j = 0; j < this.numCols; j++) {
-        if ((this.environment[i][j] && mask) >> this.animationPhase === 1) {
+        if ((this.environment[i][j] && mask) >> animationPhase === 1) {
           context.fillStyle = 'white'
           context.fillRect(j * scale, i * scale, scale, scale)
         } else {
@@ -116,11 +132,8 @@ export default class Life extends Component<Props, {}> {
   }
 
   start(timestamp: number) {
-    if (timestamp - this.previousAnimationTimestamp >= this.animationInterval) {
-      this.tick()
-      this.draw()
-
-      this.previousAnimationTimestamp = timestamp
+    if (timestamp - this.state.previousAnimationTimestamp >= this.animationInterval) {
+      this.tick(timestamp)
     }
 
     if (this.props.running) {
@@ -129,7 +142,7 @@ export default class Life extends Component<Props, {}> {
   }
 
   flushInputBuffer() {
-    const writeMask = this.animationPhase === 0 ? 1 : 2
+    const writeMask = this.state.animationPhase === 0 ? 1 : 2
 
     for (const [i, j] of this.inputBuffer) {
       this.environment[i][j] = writeMask | this.environment[i][j]
@@ -164,7 +177,7 @@ export default class Life extends Component<Props, {}> {
     this.drawing = false
 
     this.seed()
-    this.tick()
+    this.tick(0)
 
     window.requestAnimationFrame(this.start)
   }
@@ -198,6 +211,12 @@ export default class Life extends Component<Props, {}> {
     this.drawing = false
     this.showCursor = false
     this.flushInputBuffer()
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (prevState.iteration !== this.state.iteration) {
+      this.draw()
+    }
   }
 
   render() {
