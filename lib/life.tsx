@@ -1,41 +1,47 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import debounce from 'debounce'
 import seedrandom from 'seedrandom'
 import c from './life.scss'
 
-export default class Life extends Component {
-  static propTypes = {
-    className: PropTypes.string,
-    scale: PropTypes.number,
-    running: PropTypes.bool,
-    framerate: PropTypes.number,
-    seed: PropTypes.string
-  }
+interface Props {
+  scale: number
+  running: boolean
+  framerate: number
+  seed?: string,
+  className?: string
+}
 
-  static defaultProps = {
+export default class Life extends Component<Props, {}> {
+  static defaultProps: Partial<Props> = {
     scale: 4,
     running: true,
     framerate: 60
   }
 
-  constructor (...params) {
-    super(...params)
-    this.display = React.createRef()
+  display = React.createRef<HTMLCanvasElement>()
+  inputBuffer: number[] = []
+  animationInterval: number
+  previousAnimationTimestamp = 0
+  animationPhase = 0
+  environment: number[][]
+  numRows: number
+  numCols: number
+  showCursor = false
+  cursorCol?: number
+  cursorRow?: number
+  drawing = false
+
+  constructor(props: Props) {
+    super(props)
     this.draw = this.draw.bind(this)
     this.start = this.start.bind(this)
+
     this.flushInputBuffer = debounce(this.flushInputBuffer.bind(this), 1000)
-
-    this.inputBuffer = []
-
     this.animationInterval = 1000 / this.props.framerate
-    this.previousAnimationTimestamp = 0
-
-    this.animationPhase = 0
   }
 
-  tick () {
+  tick() {
     const { environment, numRows, numCols } = this
 
     const mask = this.animationPhase === 0 ? 1 : 2
@@ -77,7 +83,7 @@ export default class Life extends Component {
     this.animationPhase = this.animationPhase === 0 ? 1 : 0
   }
 
-  draw () {
+  draw() {
     const context = this.display.current.getContext('2d')
     const { scale } = this.props
 
@@ -109,7 +115,7 @@ export default class Life extends Component {
     }
   }
 
-  start (timestamp) {
+  start(timestamp: number) {
     if (timestamp - this.previousAnimationTimestamp >= this.animationInterval) {
       this.tick()
       this.draw()
@@ -122,7 +128,7 @@ export default class Life extends Component {
     }
   }
 
-  flushInputBuffer () {
+  flushInputBuffer() {
     const writeMask = this.animationPhase === 0 ? 1 : 2
 
     for (const [i, j] of this.inputBuffer) {
@@ -132,7 +138,7 @@ export default class Life extends Component {
     this.inputBuffer = []
   }
 
-  seed () {
+  seed() {
     const random = seedrandom(this.props.seed)
     this.environment = this.environment.map(row => {
       return [...row.map(() => {
@@ -141,7 +147,7 @@ export default class Life extends Component {
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const canvas = this.display.current
     canvas.height = canvas.clientHeight
     canvas.width = canvas.clientWidth
@@ -194,7 +200,7 @@ export default class Life extends Component {
     window.requestAnimationFrame(this.start)
   }
 
-  render () {
+  render() {
     return <canvas
       ref={this.display}
       className={classnames(this.props.className, c.display)}
