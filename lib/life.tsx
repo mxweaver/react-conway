@@ -4,6 +4,8 @@ import debounce from 'debounce'
 import seedrandom from 'seedrandom'
 import c from './life.scss'
 
+const LEFT_MOUSE_BUTTON = 1
+
 interface Props {
   scale: number
   running: boolean
@@ -34,7 +36,6 @@ export default class Life extends Component<Props, State> {
   numCols: number
   cursorCol?: number
   cursorRow?: number
-  drawing = false
 
   state: State = {
     animationPhase: 0,
@@ -174,8 +175,6 @@ export default class Life extends Component<Props, State> {
     this.cursorRow = 0
     this.cursorCol = 0
 
-    this.drawing = false
-
     this.seed()
     this.tick(0)
 
@@ -191,7 +190,6 @@ export default class Life extends Component<Props, State> {
   }
 
   handleMouseDown = () => {
-    this.drawing = true
     this.inputBuffer.push([this.cursorRow, this.cursorCol])
   }
 
@@ -199,18 +197,16 @@ export default class Life extends Component<Props, State> {
     this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
     this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
 
-    if (this.drawing) {
+    if (e.buttons & LEFT_MOUSE_BUTTON) {
       this.inputBuffer.push([this.cursorRow, this.cursorCol])
     }
   }
 
   handleMouseUp = () => {
-    this.drawing = false
     this.flushInputBuffer()
   }
 
   handleMouseLeave = () => {
-    this.drawing = false
     this.flushInputBuffer()
     this.setState({
       showCursor: false
