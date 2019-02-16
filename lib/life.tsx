@@ -16,9 +16,10 @@ interface Props {
 
 interface State {
   animationPhase: number
-  iteration: number,
-  previousAnimationTimestamp: number,
-  showCursor: boolean,
+  iteration: number
+  previousAnimationTimestamp: number
+  showCursor: boolean
+  inputBuffer: number[][]
   cursorCol?: number
   cursorRow?: number
 }
@@ -31,7 +32,6 @@ export default class Life extends Component<Props, State> {
   }
 
   display = React.createRef<HTMLCanvasElement>()
-  inputBuffer: number[][] = []
   animationInterval: number
   environment: number[][]
   numRows: number
@@ -41,7 +41,8 @@ export default class Life extends Component<Props, State> {
     animationPhase: 0,
     iteration: 0,
     previousAnimationTimestamp: 0,
-    showCursor: false
+    showCursor: false,
+    inputBuffer: []
   }
 
   constructor(props: Props) {
@@ -122,7 +123,7 @@ export default class Life extends Component<Props, State> {
 
     // Draw input buffer
     context.fillStyle = 'red'
-    for (const [i, j] of this.inputBuffer) {
+    for (const [i, j] of this.state.inputBuffer) {
       context.fillRect(j * scale, i * scale, scale, scale)
     }
 
@@ -146,11 +147,13 @@ export default class Life extends Component<Props, State> {
   flushInputBuffer() {
     const writeMask = this.state.animationPhase === 0 ? 1 : 2
 
-    for (const [i, j] of this.inputBuffer) {
+    for (const [i, j] of this.state.inputBuffer) {
       this.environment[i][j] = writeMask | this.environment[i][j]
     }
 
-    this.inputBuffer = []
+    this.setState({
+      inputBuffer: []
+    })
   }
 
   seed() {
@@ -187,17 +190,24 @@ export default class Life extends Component<Props, State> {
   }
 
   handleMouseDown = () => {
-    this.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
+    this.setState({
+      inputBuffer: [
+        ...this.state.inputBuffer,
+        [this.state.cursorRow, this.state.cursorCol]
+      ]
+    })
   }
 
   handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    let inputBuffer = this.state.inputBuffer
     if (e.buttons & LEFT_MOUSE_BUTTON) {
-      this.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
+      inputBuffer = [...inputBuffer, [this.state.cursorRow, this.state.cursorCol]]
     }
 
     this.setState({
       cursorRow: Math.floor(e.nativeEvent.offsetY / this.props.scale),
-      cursorCol: Math.floor(e.nativeEvent.offsetX / this.props.scale)
+      cursorCol: Math.floor(e.nativeEvent.offsetX / this.props.scale),
+      inputBuffer
     })
   }
 
