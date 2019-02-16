@@ -9,7 +9,7 @@ const obfuscate = process.env.NODE_ENV === 'production'
 
 export default {
   mode: environment === 'development' ? 'development' : 'production',
-  entry: path.join(__dirname, 'app', 'main.js'),
+  entry: path.join(__dirname, 'app', 'main.tsx'),
   devtool: environment === 'production' ? false : 'cheap-module-eval-source-map',
   output: {
     path: path.join(__dirname, 'dist'),
@@ -36,15 +36,21 @@ export default {
       chunks: 'all'
     }
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.html', '.scss']
+  },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(ts|js)x?$/,
         use: {
           loader: 'babel-loader',
           options: {
             cacheDirectory: true,
-            presets: ['@babel/preset-react'],
+            presets: [
+              '@babel/preset-react',
+              '@babel/preset-typescript'
+            ],
             plugins: [
               '@babel/plugin-proposal-object-rest-spread',
               '@babel/plugin-proposal-class-properties'
