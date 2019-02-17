@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import classnames from 'classnames'
 import debounce from 'debounce'
 import seedrandom from 'seedrandom'
+import produce from 'immer'
 import c from './life.scss'
 
 const LEFT_MOUSE_BUTTON = 1
@@ -182,6 +183,8 @@ export default class Life extends Component<Props, State> {
   }
 
   handleMouseOver = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.persist()
+
     this.setState({
       showCursor: true,
       cursorRow: Math.floor(e.nativeEvent.offsetY / this.props.scale),
@@ -190,25 +193,21 @@ export default class Life extends Component<Props, State> {
   }
 
   handleMouseDown = () => {
-    this.setState({
-      inputBuffer: [
-        ...this.state.inputBuffer,
-        [this.state.cursorRow, this.state.cursorCol]
-      ]
-    })
+    this.setState(produce((draft: State) => {
+      draft.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
+    }))
   }
 
   handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    let inputBuffer = this.state.inputBuffer
-    if (e.buttons & LEFT_MOUSE_BUTTON) {
-      inputBuffer = [...inputBuffer, [this.state.cursorRow, this.state.cursorCol]]
-    }
+    e.persist()
+    this.setState(produce((draft: State) => {
+      draft.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
+      draft.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
 
-    this.setState({
-      cursorRow: Math.floor(e.nativeEvent.offsetY / this.props.scale),
-      cursorCol: Math.floor(e.nativeEvent.offsetX / this.props.scale),
-      inputBuffer
-    })
+      if (e.buttons & LEFT_MOUSE_BUTTON) {
+        draft.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
+      }
+    }))
   }
 
   handleMouseUp = () => {
