@@ -1,16 +1,16 @@
 import React from 'react'
 import { configure, mount } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
+import adapter from 'enzyme-adapter-react-16'
 import Life from '../lib/life'
 import pretty from 'pretty-time'
 
 configure({
-  adapter: new Adapter()
+  adapter: adapter()
 })
 
 const life = mount(<Life running={false} />).instance()
 
-function run (name, task) {
+function run(name, task) {
   const start = process.hrtime()
   task()
   const duration = process.hrtime(start)

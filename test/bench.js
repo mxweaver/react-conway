@@ -1,2 +1,2 @@
-import './setup.js'
+import './setup.ts'
 import './life.bench'
