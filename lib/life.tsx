@@ -48,8 +48,6 @@ export default class Life extends Component<Props, State> {
 
   constructor(props: Props) {
     super(props)
-    this.draw = this.draw.bind(this)
-    this.start = this.start.bind(this)
 
     this.flushInputBuffer = debounce(this.flushInputBuffer.bind(this), 1000)
     this.animationInterval = 1000 / this.props.framerate
@@ -135,7 +133,7 @@ export default class Life extends Component<Props, State> {
     }
   }
 
-  start(timestamp: number) {
+  start = (timestamp: number) => {
     if (timestamp - this.state.previousAnimationTimestamp >= this.animationInterval) {
       this.tick(timestamp)
     }
