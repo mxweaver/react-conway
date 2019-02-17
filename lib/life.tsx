@@ -2,7 +2,10 @@ import React, { Component } from 'react'
 import classnames from 'classnames'
 import debounce from 'debounce'
 import seedrandom from 'seedrandom'
+import produce from 'immer'
 import c from './life.scss'
+
+const LEFT_MOUSE_BUTTON = 1
 
 interface Props {
   scale: number
@@ -12,7 +15,17 @@ interface Props {
   className?: string
 }
 
-export default class Life extends Component<Props, {}> {
+interface State {
+  animationPhase: number
+  iteration: number
+  previousAnimationTimestamp: number
+  showCursor: boolean
+  inputBuffer: number[][]
+  cursorCol?: number
+  cursorRow?: number
+}
+
+export default class Life extends Component<Props, State> {
   static defaultProps: Partial<Props> = {
     scale: 4,
     running: true,
@@ -20,32 +33,32 @@ export default class Life extends Component<Props, {}> {
   }
 
   display = React.createRef<HTMLCanvasElement>()
-  inputBuffer: number[][] = []
   animationInterval: number
-  previousAnimationTimestamp = 0
-  animationPhase = 0
   environment: number[][]
   numRows: number
   numCols: number
-  showCursor = false
-  cursorCol?: number
-  cursorRow?: number
-  drawing = false
+
+  state: State = {
+    animationPhase: 0,
+    iteration: 0,
+    previousAnimationTimestamp: 0,
+    showCursor: false,
+    inputBuffer: []
+  }
 
   constructor(props: Props) {
     super(props)
-    this.draw = this.draw.bind(this)
-    this.start = this.start.bind(this)
 
     this.flushInputBuffer = debounce(this.flushInputBuffer.bind(this), 1000)
     this.animationInterval = 1000 / this.props.framerate
   }
 
-  tick() {
+  tick(timestamp: number) {
     const { environment, numRows, numCols } = this
+    const { animationPhase } = this.state
 
-    const mask = this.animationPhase === 0 ? 1 : 2
-    const writeMask = this.animationPhase === 0 ? 2 : 1
+    const mask = animationPhase === 0 ? 1 : 2
+    const writeMask = animationPhase === 0 ? 2 : 1
 
     for (let i = 0; i < numRows; i++) {
       for (let j = 0; j < numCols; j++) {
@@ -55,18 +68,18 @@ export default class Life extends Component<Props, {}> {
         const eastCol = (numCols + j + 1) % numCols
 
         const neighbors = 0 +
-          +((environment[northRow][westCol] & mask) >> this.animationPhase) +
-          ((environment[northRow][j] & mask) >> this.animationPhase) +
-          ((environment[northRow][eastCol] & mask) >> this.animationPhase) +
-          ((environment[i][westCol] & mask) >> this.animationPhase) +
-          ((environment[i][eastCol] & mask) >> this.animationPhase) +
-          ((environment[southRow][westCol] & mask) >> this.animationPhase) +
-          ((environment[southRow][j] & mask) >> this.animationPhase) +
-          ((environment[southRow][eastCol] & mask) >> this.animationPhase)
+          +((environment[northRow][westCol] & mask) >> animationPhase) +
+          ((environment[northRow][j] & mask) >> animationPhase) +
+          ((environment[northRow][eastCol] & mask) >> animationPhase) +
+          ((environment[i][westCol] & mask) >> animationPhase) +
+          ((environment[i][eastCol] & mask) >> animationPhase) +
+          ((environment[southRow][westCol] & mask) >> animationPhase) +
+          ((environment[southRow][j] & mask) >> animationPhase) +
+          ((environment[southRow][eastCol] & mask) >> animationPhase)
 
         const cell = environment[i][j]
 
-        if ((cell & mask) >> this.animationPhase === 1) {
+        if ((cell & mask) >> animationPhase === 1) {
           if (neighbors === 3 || neighbors === 2) {
             environment[i][j] = writeMask | cell
           } else {
@@ -80,19 +93,24 @@ export default class Life extends Component<Props, {}> {
       }
     }
 
-    this.animationPhase = this.animationPhase === 0 ? 1 : 0
+    this.setState({
+      animationPhase: animationPhase === 0 ? 1 : 0,
+      iteration: this.state.iteration + 1,
+      previousAnimationTimestamp: timestamp
+    })
   }
 
   draw() {
     const context = this.display.current.getContext('2d')
     const { scale } = this.props
+    const { animationPhase } = this.state
 
-    const mask = this.animationPhase === 0 ? 1 : 2
+    const mask = animationPhase === 0 ? 1 : 2
 
     // Draw environment
     for (let i = 0; i < this.numRows; i++) {
       for (let j = 0; j < this.numCols; j++) {
-        if ((this.environment[i][j] && mask) >> this.animationPhase === 1) {
+        if ((this.environment[i][j] && mask) >> animationPhase === 1) {
           context.fillStyle = 'white'
           context.fillRect(j * scale, i * scale, scale, scale)
         } else {
@@ -104,23 +122,20 @@ export default class Life extends Component<Props, {}> {
 
     // Draw input buffer
     context.fillStyle = 'red'
-    for (const [i, j] of this.inputBuffer) {
+    for (const [i, j] of this.state.inputBuffer) {
       context.fillRect(j * scale, i * scale, scale, scale)
     }
 
     // Draw cursor
-    if (this.showCursor) {
+    if (this.state.showCursor) {
       context.fillStyle = 'red'
-      context.fillRect(this.cursorCol * scale, this.cursorRow * scale, scale, scale)
+      context.fillRect(this.state.cursorCol * scale, this.state.cursorRow * scale, scale, scale)
     }
   }
 
-  start(timestamp: number) {
-    if (timestamp - this.previousAnimationTimestamp >= this.animationInterval) {
-      this.tick()
-      this.draw()
-
-      this.previousAnimationTimestamp = timestamp
+  start = (timestamp: number) => {
+    if (timestamp - this.state.previousAnimationTimestamp >= this.animationInterval) {
+      this.tick(timestamp)
     }
 
     if (this.props.running) {
@@ -129,13 +144,15 @@ export default class Life extends Component<Props, {}> {
   }
 
   flushInputBuffer() {
-    const writeMask = this.animationPhase === 0 ? 1 : 2
+    const writeMask = this.state.animationPhase === 0 ? 1 : 2
 
-    for (const [i, j] of this.inputBuffer) {
+    for (const [i, j] of this.state.inputBuffer) {
       this.environment[i][j] = writeMask | this.environment[i][j]
     }
 
-    this.inputBuffer = []
+    this.setState({
+      inputBuffer: []
+    })
   }
 
   seed() {
@@ -157,47 +174,55 @@ export default class Life extends Component<Props, {}> {
 
     this.environment = ([...new Array(this.numRows)]).map(() => [...new Array(this.numCols)])
 
-    this.cursorRow = 0
-    this.cursorCol = 0
-
-    this.showCursor = false
-    this.drawing = false
-
     this.seed()
-    this.tick()
+    this.tick(0)
 
     window.requestAnimationFrame(this.start)
   }
 
   handleMouseOver = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    this.showCursor = true
-    this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
-    this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
+    e.persist()
+
+    this.setState({
+      showCursor: true,
+      cursorRow: Math.floor(e.nativeEvent.offsetY / this.props.scale),
+      cursorCol: Math.floor(e.nativeEvent.offsetX / this.props.scale)
+    })
   }
 
   handleMouseDown = () => {
-    this.drawing = true
-    this.inputBuffer.push([this.cursorRow, this.cursorCol])
+    this.setState(produce((draft: State) => {
+      draft.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
+    }))
   }
 
   handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    this.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
-    this.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
+    e.persist()
+    this.setState(produce((draft: State) => {
+      draft.cursorRow = Math.floor(e.nativeEvent.offsetY / this.props.scale)
+      draft.cursorCol = Math.floor(e.nativeEvent.offsetX / this.props.scale)
 
-    if (this.drawing) {
-      this.inputBuffer.push([this.cursorRow, this.cursorCol])
-    }
+      if (e.buttons & LEFT_MOUSE_BUTTON) {
+        draft.inputBuffer.push([this.state.cursorRow, this.state.cursorCol])
+      }
+    }))
   }
 
   handleMouseUp = () => {
-    this.drawing = false
     this.flushInputBuffer()
   }
 
   handleMouseLeave = () => {
-    this.drawing = false
-    this.showCursor = false
     this.flushInputBuffer()
+    this.setState({
+      showCursor: false
+    })
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if (prevState.iteration !== this.state.iteration) {
+      this.draw()
+    }
   }
 
   render() {
